@@ -5,6 +5,7 @@ import Navbar from "react-bootstrap/Navbar";
 import { useAuth } from "../../Context/Auth";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import "./Header.css";
+import SearchInput from "../Form/SearchInput";
 const Header = () => {
   const [auth, setAuth] = useAuth();
 
@@ -25,6 +26,7 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className=" ms-auto">
+            <SearchInput/>
             <Nav.Link href="/">HOME</Nav.Link>
             <Nav.Link href="#">CATEGORIES</Nav.Link>
 

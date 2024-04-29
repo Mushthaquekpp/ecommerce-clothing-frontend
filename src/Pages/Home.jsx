@@ -2,14 +2,37 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { Col, Row } from "react-bootstrap";
 import Layout from "../Components/Layout/Layout";
+import toast from "react-hot-toast";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../App.css";
 import { prices } from "../Components/Prices";
+
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [checked, setChecked] = useState([]);
+  const [radio, setRadio] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false); // Add loading state
+
+  useEffect(() => {
+    getTotal();
+    getProduct();
+    getCategory();
+  }, []);
+
+  const getTotal = async () => {
+    try {
+      const { data } = await axios.get(
+        "http://localhost:8080/api/v1/product/product-count"
+      );
+      setTotal(data?.total);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getProduct = async () => {
     try {
@@ -40,31 +63,42 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    getProduct();
-    getCategory();
-  }, []);
-
   const handleFilter = (value, id) => {
-    let all = [...checked];
-    if (value) {
-      all.push(id);
-    } else {
-      all = all.filter((c) => c !== id);
+    const updatedChecked = value
+      ? [...checked, id]
+      : checked.filter((c) => c !== id);
+    setChecked(updatedChecked);
+  };
+
+  const filterProducts = async () => {
+    setLoading(true); // Set loading to true before making the request
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8080/api/v1/product/product-filters",
+        {
+          checked,
+          radio,
+        }
+      );
+      if (data.success) {
+        setProducts(data?.products);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false); // Set loading to false after the request is completed
     }
-    setChecked(all);
   };
   useEffect(() => {
-    if (!checked.length || radio.length) getProduct();
-  }, [checked.length, radio.length]);
-
-  useEffect(() => {
-    if (!checked.length || radio.length) filterProduct();
+    filterProducts();
   }, [checked, radio]);
 
+  const resetFilters = () => {
+    setChecked([]);
+    setRadio([]);
+    getProduct();
+  };
 
-
-  
   return (
     <Layout title={"Ecommerce"}>
       <>
@@ -98,12 +132,18 @@ const Home = () => {
                     type="radio"
                     label={p.name}
                     name="prices"
-                    value={p.array}
+                    value={p.array} // Change this to value={p.array} to correctly set the price range
                     className="custom-radio"
+                    onChange={(e) => setRadio(p.array)} // Update to setRadio(p.array) to correctly set the 'radio' state
                   />
                 ))}
               </Form>
-              <Button className="btn btn-primary my-3 mx-3">Reset</Button>
+              <Button
+                className="btn btn-primary my-3 mx-3"
+                onClick={resetFilters}
+              >
+                Reset
+              </Button>
             </div>
           </Col>
           <Col md="9">
@@ -115,11 +155,14 @@ const Home = () => {
                   className="product-link"
                 >
                   <Card className="product-card">
-                    <Card.Img
-                      variant="top"
-                      src={`http://localhost:8080/api/v1/product/photo/${item._id}`}
-                      alt={item.name}
-                    />
+                    <div className="image-container">
+                      <Card.Img
+                        src={`http://localhost:8080/api/v1/product/photo/${item._id}`}
+                        alt={item.name}
+                        className="product-image"
+                      />
+                    </div>
+
                     <Card.Body style={{ textAlign: "center" }}>
                       <Card.Title>{item.name}</Card.Title>
                       <Card.Text>{item.description}</Card.Text>
@@ -128,6 +171,21 @@ const Home = () => {
                   </Card>
                 </Link>
               ))}
+            </div>
+            <div className="m-2 p-3 ">
+              {products && products.length < total && (
+                <Button
+                  className="btn btn-warning"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(page + 1);
+                  }}
+                >
+                  {loading ? "Loading..." : "Load more"}
+                  {/* Display 'Loading...' when loading is true */}
+                </Button>
+              )}
+              <h1>{total}</h1>
             </div>
           </Col>
         </Row>

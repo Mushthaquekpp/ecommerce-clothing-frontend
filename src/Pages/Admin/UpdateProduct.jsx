@@ -15,6 +15,7 @@ const UpdateProduct = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
+  console.log("the name is", name);
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
@@ -22,9 +23,9 @@ const UpdateProduct = () => {
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState(null);
 
-  console.log(setName);
   const navigate = useNavigate();
   const { slug } = useParams();
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
