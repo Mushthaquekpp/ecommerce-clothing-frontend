@@ -26,7 +26,7 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className=" ms-auto">
-            <SearchInput/>
+            <SearchInput />
             <Nav.Link href="/">HOME</Nav.Link>
             <Nav.Link href="#">CATEGORIES</Nav.Link>
 
