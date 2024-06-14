@@ -19,6 +19,11 @@ import CreateCategory from "./Pages/Admin/CreateCategory";
 import CreateProduct from "./Pages/Admin/CreateProduct";
 import Product from "./Pages/Admin/Product";
 import UpdateProduct from "./Pages/Admin/UpdateProduct";
+import ProductInfo from "./Pages/ProductInfo";
+import CategoryList from "./Pages/CategoryList";
+import CategoryProducts from "./Pages/CategoryProducts";
+import Cart from "./Pages/Cart";
+import SearchResult from "./Pages/SearchResult";
 const App = () => {
   return (
     <>
@@ -31,8 +36,12 @@ const App = () => {
           <Route path="/policy" element={<Policy />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/search" element={<SearchResult />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-
+          <Route path="/product/:slug" element={<ProductInfo />} />
+          <Route path="/all-categories" element={<CategoryList />} />
+          <Route path="/categories/:slug" element={<CategoryProducts />} />
           <Route path="/dashboard" element={<PrivateRoute />}>
             <Route path="user" element={<Dashboard />} />
             <Route path="user/profile" element={<Profile />} />

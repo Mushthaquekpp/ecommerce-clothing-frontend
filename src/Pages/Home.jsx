@@ -7,6 +7,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import "../App.css";
 import { prices } from "../Components/Prices";
+import { useCart } from "../Context/Cart";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -16,6 +17,7 @@ const Home = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false); // Add loading state
+  const [cart, setCart] = useCart();
 
   useEffect(() => {
     getTotal();
@@ -89,6 +91,7 @@ const Home = () => {
       setLoading(false); // Set loading to false after the request is completed
     }
   };
+
   useEffect(() => {
     filterProducts();
   }, [checked, radio]);
@@ -119,6 +122,7 @@ const Home = () => {
                     label={c.name}
                     name="category"
                     value={c._id}
+                    checked={!!checked.find((id) => id === c._id)}
                     className="custom-radio"
                     onChange={(e) => handleFilter(e.target.checked, c._id)}
                   />
@@ -133,6 +137,7 @@ const Home = () => {
                     label={p.name}
                     name="prices"
                     value={p.array} // Change this to value={p.array} to correctly set the price range
+                    checked={radio.length && radio[0] === p.array[0]}
                     className="custom-radio"
                     onChange={(e) => setRadio(p.array)} // Update to setRadio(p.array) to correctly set the 'radio' state
                   />
@@ -149,27 +154,34 @@ const Home = () => {
           <Col md="9">
             <div className="product-container">
               {products.map((item) => (
-                <Link
-                  key={item._id}
-                  to={`/dashboard/admin/products/${item.slug}`}
-                  className="product-link"
-                >
-                  <Card className="product-card">
-                    <div className="image-container">
-                      <Card.Img
-                        src={`http://localhost:8080/api/v1/product/photo/${item._id}`}
-                        alt={item.name}
-                        className="product-image"
-                      />
-                    </div>
+                <Card className="product-card" key={item.slug}>
+                  <div className="image-container">
+                    <Card.Img
+                      src={`http://localhost:8080/api/v1/product/photo/${item._id}`}
+                      alt={item.name}
+                      className="product-image"
+                    />
+                  </div>
 
-                    <Card.Body style={{ textAlign: "center" }}>
-                      <Card.Title>{item.name}</Card.Title>
-                      <Card.Text>{item.description}</Card.Text>
-                      <Card.Text>price: {item.price} ₹</Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Link>
+                  <Card.Body style={{ textAlign: "center" }}>
+                    <Card.Title>{item.name}</Card.Title>
+                    <Card.Text>price: {item.price} ₹</Card.Text>
+
+                    <Link className="more-link" to={`/product/${item.slug}`}>
+                      More Details
+                    </Link>
+                    <Button
+                      value="primary"
+                      className="mx-2"
+                      onClick={() => {
+                        setCart([...cart, item]);
+                        toast.success("item added to cart successfully");
+                      }}
+                    >
+                      Add to Cart
+                    </Button>
+                  </Card.Body>
+                </Card>
               ))}
             </div>
             <div className="m-2 p-3 ">

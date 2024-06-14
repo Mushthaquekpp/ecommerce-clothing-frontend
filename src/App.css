@@ -29,7 +29,9 @@
   text-decoration: none;
   color: inherit;
 }
-
+.more-link {
+  color: blue;
+}
 .image-container {
   height: 100%; /* Set the height of the image container */
   overflow: hidden; /* Hide overflow to ensure the image fits within the container */
